@@ -123,9 +123,19 @@ function drawBall(){
 }
 
 //HELPERS del juego ---------------------------------------------
+function initPaddleMovement(){
+    cvs.addEventListener('mousemove', updateLocalPlayerPos);
+}
+
+function updateLocalPlayerPos(event){
+    const rect = cvs.getBoundingClientRect();
+    localPlayer.y = event.clientY - localPlayer.height/2 - rect.top;
+}
 function pause(ms){
-    const currentTime = new Date().getTime();
-    while(currentTime+ms >= new Date().getTime());
+    stopGameLoop();
+    setTimeout(() => {
+        initGameLoop();
+    }, ms);
 }
 function newBall(){
     ball.x = cvs.width/2;
@@ -208,23 +218,47 @@ function update(){
 
 function render(){
     clearCanvas();
+    
     drawNet();
     drawScore();
+    
     drawPaddle(localPlayer);
-    drawPaddle(computer);    
-    drawBall()
+    drawPaddle(computer);   
+    //Si ha terminado la partida...
+    if(isGameOver()){
+        endGame();
+    }else{
+
+        drawBall();
+    }
+
 }
+function isGameOver(){
+    return localPlayer.score >= NUM_BALLS || computer.score >= NUM_BALLS;
+}
+function endGame(){
+    console.log("Game over");
+
+    //Mostramos el mensaje del juego
+    drawText('GAME OVER', cvs.width/3, cvs.height/2, 'BLUE');
+
+    stopGameLoop();
+}
+
 function loopGame(){
     update();
     render();
 }
 
-function initLoopGame(){
-    setInterval(loopGame, 1000/FRAME_PER_SECOND);
+var gameLoopId;
+
+function initGameLoop(){
+    gameLoopId = setInterval(loopGame, 1000/FRAME_PER_SECOND);
 }
 
 function play(){
-    initLoopGame();
+    initPaddleMovement();
+    initGameLoop();
 }
 //inicio el juego
 play();
