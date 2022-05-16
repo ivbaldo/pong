@@ -251,6 +251,9 @@ function loopGame(){
 }
 
 var gameLoopId;
+function stopGameLoop(){
+    clearInterval(gameLoopId);
+}
 
 function initGameLoop(){
     gameLoopId = setInterval(loopGame, 1000/FRAME_PER_SECOND);
